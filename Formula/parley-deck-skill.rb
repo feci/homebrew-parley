@@ -4,13 +4,16 @@ class ParleyDeckSkill < Formula
   url "https://github.com/feci/parley-deck-skill/archive/refs/tags/v1.0.1.tar.gz"
   sha256 "80e7a3bd39c93cb57fc653bfcf281edec60b571393fe8067be6c54d32d58ae3c"
   license "Apache-2.0"
+  revision 1
   head "https://github.com/feci/parley-deck-skill.git", branch: "main"
 
   depends_on "node"
 
   def install
     libexec.install Dir["*"]
-    bin.install_symlink libexec/"bin/parley-deck-skill.js" => "parley-deck-skill"
+    (libexec/"README.md").write((buildpath/"README.md").read)
+    (libexec/"LICENSE").write((buildpath/"LICENSE").read)
+    bin.write_exec_script libexec/"bin/parley-deck-skill.js"
   end
 
   test do
