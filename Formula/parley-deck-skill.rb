@@ -1,18 +1,20 @@
 class ParleyDeckSkill < Formula
   desc "Installer for the Parley Deck multi-agent cooperation skill"
   homepage "https://github.com/feci/parley-deck-skill"
-  url "https://github.com/feci/parley-deck-skill/archive/refs/tags/v1.0.1.tar.gz"
-  sha256 "80e7a3bd39c93cb57fc653bfcf281edec60b571393fe8067be6c54d32d58ae3c"
+  url "https://github.com/feci/parley-deck-skill/archive/refs/tags/v1.0.2.tar.gz"
+  sha256 "3528de80bf8db8272ffbe908da476cf13a8368fef00e1880905d04f4440aa568"
   license "Apache-2.0"
-  revision 1
   head "https://github.com/feci/parley-deck-skill.git", branch: "main"
 
   depends_on "node"
 
   def install
+    readme = (buildpath/"README.md").read
+    license_text = (buildpath/"LICENSE").read
+
     libexec.install Dir["*"]
-    (libexec/"README.md").write((buildpath/"README.md").read)
-    (libexec/"LICENSE").write((buildpath/"LICENSE").read)
+    (libexec/"README.md").write(readme)
+    (libexec/"LICENSE").write(license_text)
     bin.write_exec_script libexec/"bin/parley-deck-skill.js"
   end
 
