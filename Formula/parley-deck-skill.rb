@@ -1,8 +1,8 @@
 class ParleyDeckSkill < Formula
   desc "Installer for the Parley Deck multi-agent cooperation skill"
   homepage "https://github.com/feci/parley-deck-skill"
-  url "https://github.com/feci/parley-deck-skill/archive/refs/tags/v1.2.1.tar.gz"
-  sha256 "a74507267baac4b286d5b2711e02bf6bd75bac78b3b98365540a0fb4f7882d77"
+  url "https://github.com/feci/parley-deck-skill/archive/refs/tags/v1.3.0.tar.gz"
+  sha256 "fe37bf42ced3fadff3bac3c7d7e878cc1f2e30fb970188fd7d724a81007b28b9"
   license "Apache-2.0"
   head "https://github.com/feci/parley-deck-skill.git", branch: "main"
 
