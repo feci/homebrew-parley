@@ -1,8 +1,8 @@
 class ParleyDeckCli < Formula
   desc "CLI for Parley Deck multi-agent workflows"
   homepage "https://github.com/feci/parley-deck-cli"
-  url "https://github.com/feci/parley-deck-cli/archive/refs/tags/v1.29.0.tar.gz"
-  sha256 "6cac9b856bee0f5e0de6ac9af12d1e616282860305cf2d8c16ca3fde8fae7adb"
+  url "https://github.com/feci/parley-deck-cli/archive/refs/tags/v1.30.0.tar.gz"
+  sha256 "ed4083b2f6b008191ec9b05347ed2555db9c18d9553a80eb388e42245d029551"
   license "Apache-2.0"
   head "https://github.com/feci/parley-deck-cli.git", branch: "main"
 
