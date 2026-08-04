@@ -17,10 +17,16 @@ class ParleyDeckSkill < Formula
   #                           modified: bin/claim.js; modified: bin/validate.js
   #
   # The payload is inert instruction and script content that this formula must ship verbatim.
-  skip_clean libexec/"skills"
-
   def install
     libexec.install Dir["*"]
+    # Homebrew rewrites `#!/usr/bin/env node` to an absolute interpreter path in scripts it
+    # considers executable. From 2.2.0 each packaged skill ships a `parley-addon.json` covering
+    # its own files byte for byte, so that rewrite makes the payload disagree with its manifest
+    # and the installer refuses to install anything at all. The payload is inert content this
+    # formula must ship verbatim, so it is installed non-executable and invoked via `node`.
+    Dir.glob(libexec/"skills/**/*").each do |f|
+      File.chmod(0644, f) if File.file?(f)
+    end
     bin.install_symlink libexec/"bin/parley-deck-skill.js" => "parley-deck-skill"
   end
 
