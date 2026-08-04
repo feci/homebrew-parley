@@ -8,6 +8,17 @@ class ParleyDeckSkill < Formula
 
   depends_on "node"
 
+  # Homebrew's cleaner rewrites `#!/usr/bin/env node` to an absolute interpreter path in every
+  # script it installs. From 2.2.0 each packaged skill ships a `parley-addon.json` integrity
+  # manifest covering its own files byte for byte, so that rewrite makes the payload disagree
+  # with its manifest and the installer refuses to install anything at all:
+  #
+  #   failed parley-tracker - Source payload does not match parley-addon.json:
+  #                           modified: bin/claim.js; modified: bin/validate.js
+  #
+  # The payload is inert instruction and script content that this formula must ship verbatim.
+  skip_clean libexec/"skills"
+
   def install
     libexec.install Dir["*"]
     bin.install_symlink libexec/"bin/parley-deck-skill.js" => "parley-deck-skill"
