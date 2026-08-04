@@ -8,6 +8,9 @@ class ParleyDeckSkill < Formula
 
   depends_on "node"
 
+  # See install: the packaged skills carry byte-exact integrity manifests.
+  skip_clean "libexec/skills"
+
   # Homebrew's cleaner rewrites `#!/usr/bin/env node` to an absolute interpreter path in every
   # script it installs. From 2.2.0 each packaged skill ships a `parley-addon.json` integrity
   # manifest covering its own files byte for byte, so that rewrite makes the payload disagree
