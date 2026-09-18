@@ -1,8 +1,8 @@
 class ParleyDeckSkill < Formula
   desc "Installer for the Parley Deck multi-agent cooperation skill"
   homepage "https://github.com/feci/parley-deck-skill"
-  url "https://github.com/feci/parley-deck-skill/archive/refs/tags/v2.11.0.tar.gz"
-  sha256 "b5fad20956ecf6785819ed79f6a3e26c47eb79d0db9da84cd0d429adc75449dd"
+  url "https://github.com/feci/parley-deck-skill/archive/refs/tags/v2.12.1.tar.gz"
+  sha256 "9e019d7d52f89bd4de7fedb9a0c610273699e4177d7fb53da6fcd343c658408f"
   license "Apache-2.0"
   head "https://github.com/feci/parley-deck-skill.git", branch: "main"
 
@@ -22,20 +22,28 @@ class ParleyDeckSkill < Formula
   #                           modified: bin/claim.js; modified: bin/validate.js
   #
   # `skip_clean` does not prevent it (tried in all three documented forms). The payload is inert
-  # content this formula must ship verbatim, so the rewrite is undone here — post_install runs
+  # content this formula must ship verbatim, so the rewrite is undone here — post_install_steps runs
   # after the rewrite, and only a shebang pointing into a Homebrew prefix is touched.
-  def post_install
-    Dir.glob("#{libexec}/skills/**/*").each do |file|
-      next unless File.file?(file)
-
-      body = File.read(file)
-      next unless body.start_with?("#!")
-
-      shebang = body.lines.first
-      next unless shebang =~ %r{\A#!\s*(/opt/homebrew|/usr/local|#{Regexp.escape(HOMEBREW_PREFIX.to_s)})\S*/([^/\s]+)}
-
-      File.write(file, body.sub(/\A#![^\n]*\n/, "#!/usr/bin/env #{Regexp.last_match(2)}\n"))
-    end
+  post_install_steps do
+    run "opt/node/bin/node", base: :homebrew_prefix,
+                             args: ["-e", <<~JS, "{{libexec}}/skills", "{{HOMEBREW_PREFIX}}"]
+                               const fs = require("node:fs");
+                               const path = require("node:path");
+                               const prefixes = ["/opt/homebrew", "/usr/local", process.argv[2]];
+                               function restore(dir) {
+                                 for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+                                   const file = path.join(dir, entry.name);
+                                   if (entry.isDirectory()) { restore(file); continue; }
+                                   if (!entry.isFile()) continue;
+                                   const body = fs.readFileSync(file, "utf8");
+                                   const match = body.match(/^#![ \\t]*(\\S+)[ \\t]*\\n/);
+                                   if (!match || !prefixes.some(prefix => match[1].startsWith(prefix + "/"))) continue;
+                                   const interpreter = path.basename(match[1]);
+                                   fs.writeFileSync(file, "#!/usr/bin/env " + interpreter + "\\n" + body.slice(match[0].length));
+                                 }
+                               }
+                               restore(process.argv[1]);
+                             JS
   end
 
   test do
@@ -45,7 +53,7 @@ class ParleyDeckSkill < Formula
     # string is not evidence that it works.
     ENV["HOME"] = testpath
     system bin/"parley-deck-skill", "install", "--target", "codex", "--yes"
-    assert_predicate testpath/".codex/skills/parley-deck/SKILL.md", :exist?
+    assert_path_exists testpath/".codex/skills/parley-deck/SKILL.md"
     system bin/"parley-deck-skill", "doctor", "--target", "codex"
   end
 end
